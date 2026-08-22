@@ -55,6 +55,38 @@ The calculation is deterministic:
 
 The engine returns current coverage, projected coverage, coverage delta, overlapping absences, risk classification, recommendation, and human-readable reasons. It is deliberately deterministic and explainable; it does not present an opaque machine-learning prediction. HR remains in control of the action.
 
+![Dayflow Decision Center - explainable leave impact analysis](docs/screenshots/decision-center.jpg)
+
+*Before HR approves a leave request, Dayflow evaluates its operational impact. In this verified scenario, Engineering coverage falls from 100% to 50%, with the risk, calculation, and reasons exposed before the human decision.*
+
+```text
+CURRENT TEAM COVERAGE
+100%
+    ↓
+IF APPROVED
+50%
+    ↓
+IMPACT
+-50 percentage points
+    ↓
+RISK
+HIGH
+    ↓
+WHY
+- Engineering has 2 employees.
+- Existing overlapping approved absences are evaluated.
+- The request removes one available team member.
+- Projected availability is recalculated from persisted workforce and leave state.
+    ↓
+RECOMMENDATION
+Review coverage plan before approving.
+    ↓
+HUMAN DECISION
+Approve anyway / Reject
+```
+
+Dayflow does not autonomously approve or reject employees. This is deterministic decision support with HR as the decision-maker.
+
 ```mermaid
 flowchart TD
         A[Workforce data] --> E[Decision Engine]
@@ -78,6 +110,18 @@ flowchart TD
 | Own payroll view | Payroll management |
 | In-app notifications | Audit activity timeline |
 
+![Dayflow HR Command Center](docs/screenshots/hr-command-center.jpg)
+
+*The HR Command Center combines live attendance, leave, payroll context, and decision-support entry points in one operational view.*
+
+![Dayflow Employee Workspace](docs/screenshots/employee-dashboard.jpg)
+
+*Employees receive a separate role-aware workspace for attendance, leave, payroll, profile, and notifications.*
+
+![Dayflow HR impact preview](docs/screenshots/hr-impact-preview.jpg)
+
+*The compact impact preview keeps decision support close to the normal HR workflow.*
+
 ## Explainable attendance signals
 
 Attendance signals are generated from real attendance records and expose the rule that triggered them:
@@ -89,6 +133,10 @@ Attendance signals are generated from real attendance records and expose the rul
 
 Dayflow surfaces reasons rather than hiding them behind a black-box score.
 
+![Dayflow Attendance Intelligence](docs/screenshots/attendance-intelligence.jpg)
+
+*Attendance signals expose the underlying reason, such as a missing checkout, instead of presenting an unexplained score.*
+
 ## Security and role boundaries
 
 - JWT authentication protects authenticated API requests.
@@ -98,6 +146,10 @@ Dayflow surfaces reasons rather than hiding them behind a black-box score.
 - An employee requesting the HR-only employee listing receives HTTP `403`.
 
 The local demo is not presented as a production deployment. Secrets should be configured differently before production use.
+
+![Dayflow Audit Activity](docs/screenshots/audit-activity.jpg)
+
+*Consequential HR actions remain traceable through a persisted activity timeline.*
 
 ## Architecture
 
@@ -239,7 +291,14 @@ dayflow-hrms/
 │       ├── main.tsx
 │       └── vite-env.d.ts
 ├── docs/
-│   └── BUILD_NOTES.md
+│   ├── BUILD_NOTES.md
+│   └── screenshots/
+│       ├── attendance-intelligence.jpg
+│       ├── audit-activity.jpg
+│       ├── decision-center.jpg
+│       ├── employee-dashboard.jpg
+│       ├── hr-command-center.jpg
+│       └── hr-impact-preview.jpg
 ├── scripts/
 │   └── dev_up.sh
 ├── tests/
@@ -249,13 +308,14 @@ dayflow-hrms/
 
 ## Product walkthrough
 
-No product screenshots are committed yet, so this README does not include invented or broken image links. The recommended screenshots to add later are:
+The walkthrough above uses six real screenshots captured from the verified local application:
 
 1. HR Command Center with live workforce metrics.
-2. Decision Center showing the verified `100% -> 50%` impact.
-3. Employee dashboard after login.
-4. Team attendance with explainable signals.
-5. Audit activity timeline.
+2. Full Decision Center showing the verified `100% -> 50%` impact.
+3. Compact HR impact preview.
+4. Employee dashboard after login.
+5. Team attendance with explainable signals.
+6. Audit activity timeline.
 
 ## Design principles
 
