@@ -5,6 +5,7 @@ from ..auth import get_current_user, require_hr
 from ..db import get_db
 from ..models import Employee, LeaveRequest, LeaveStatus, User
 from ..schemas import LeaveCreate, LeaveDecision, LeaveOut
+from ..services import audit, notify
 
 router = APIRouter(prefix="/api/leaves", tags=["leaves"])
 
@@ -42,7 +43,7 @@ def create_leave(payload: LeaveCreate, user: User = Depends(get_current_user), d
         raise HTTPException(400, "Leave request cannot exceed 30 days")
     overlap = db.query(LeaveRequest).filter(
         LeaveRequest.employee_id == employee.id,
-        LeaveRequest.status == LeaveStatus.PENDING,
+        LeaveRequest.status.in_([LeaveStatus.PENDING, LeaveStatus.APPROVED]),
         LeaveRequest.start_date <= payload.end_date,
         LeaveRequest.end_date >= payload.start_date,
     ).first()
@@ -56,6 +57,9 @@ def create_leave(payload: LeaveCreate, user: User = Depends(get_current_user), d
         remarks=payload.remarks,
     )
     db.add(item)
+    db.flush()
+    audit(db, user, "leave_submitted", "leave", item.id, {"leave_type": item.leave_type})
+    notify(db, user.id, "Leave request submitted", f"Your {item.leave_type.lower()} leave request is awaiting review.")
     db.commit()
     db.refresh(item)
     return serialize(item)
@@ -76,6 +80,8 @@ def decide_leave(
     item.status = payload.status
     item.reviewer_comment = payload.reviewer_comment
     item.reviewed_at = datetime.utcnow()
+    audit(db, _, f"leave_{payload.status.value}", "leave", item.id, {"comment": payload.reviewer_comment})
+    notify(db, item.employee.user_id, f"Leave {payload.status.value}", payload.reviewer_comment or f"Your leave request was {payload.status.value}.")
     db.commit()
     db.refresh(item)
     return serialize(item)

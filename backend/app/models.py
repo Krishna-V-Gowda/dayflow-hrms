@@ -26,6 +26,11 @@ class AttendanceStatus(str, Enum):
     LEAVE = "leave"
 
 
+class NotificationType(str, Enum):
+    LEAVE = "leave"
+    ATTENDANCE = "attendance"
+
+
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -77,3 +82,39 @@ class Attendance(Base):
     check_out: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     status: Mapped[AttendanceStatus] = mapped_column(String(20), default=AttendanceStatus.PRESENT)
     employee: Mapped[Employee] = relationship(back_populates="attendance")
+
+
+class PayrollRecord(Base):
+    __tablename__ = "payroll_records"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"), unique=True, index=True)
+    basic_salary: Mapped[float] = mapped_column(Float, default=0)
+    allowances: Mapped[float] = mapped_column(Float, default=0)
+    deductions: Mapped[float] = mapped_column(Float, default=0)
+    effective_from: Mapped[date] = mapped_column(Date, default=date.today)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    employee: Mapped[Employee] = relationship()
+
+
+class AuditLog(Base):
+    __tablename__ = "audit_logs"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    actor_user_id: Mapped[int] = mapped_column("actor_user_id", ForeignKey("users.id"), index=True)
+    action: Mapped[str] = mapped_column(String(60))
+    entity_type: Mapped[str] = mapped_column(String(60))
+    entity_id: Mapped[int] = mapped_column(Integer)
+    details: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    actor: Mapped[User] = relationship()
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    notification_type: Mapped[NotificationType] = mapped_column("level", String(30), default=NotificationType.LEAVE)
+    title: Mapped[str] = mapped_column(String(160))
+    message: Mapped[str] = mapped_column(Text)
+    is_read: Mapped[bool] = mapped_column("read", default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    user: Mapped[User] = relationship()

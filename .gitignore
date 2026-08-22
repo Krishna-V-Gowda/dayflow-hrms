@@ -16,6 +16,7 @@ dist/
 .vite/
 
 # Local data / secrets
+.dayflow_backups/
 .env
 .env.*
 !.env.example
@@ -32,3 +33,6 @@ backend/data/*.db
 
 # Build
 coverage.xml
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
