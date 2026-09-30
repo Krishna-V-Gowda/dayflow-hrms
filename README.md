@@ -188,7 +188,7 @@ FastAPI Swagger documentation is available locally at [http://127.0.0.1:8000/doc
 
 ## Verification
 
-The current competition checkpoint has the following verified evidence:
+The current release has the following verified evidence:
 
 - 9 automated backend tests passing.
 - Backend compilation passing.
@@ -324,7 +324,3 @@ The walkthrough above uses six real screenshots captured from the verified local
 - Server-enforced authorization.
 - Human-in-the-loop decisions.
 - Reliability over unnecessary complexity.
-
-## Built for
-
-**Odoo x NMIT Bangalore Hackathon 2026**
