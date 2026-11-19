@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta, timezone
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -7,7 +8,9 @@ from sqlalchemy.orm import Session
 from .db import get_db
 from .models import Role, User
 
-SECRET_KEY = "DAYFLOW_LOCAL_DEMO_SECRET_CHANGE_BEFORE_PRODUCTION"
+# Set DAYFLOW_SECRET_KEY for any shared or deployed instance. The fallback exists only
+# so the local demo runs without configuration.
+SECRET_KEY = os.environ.get("DAYFLOW_SECRET_KEY") or "DAYFLOW_LOCAL_DEMO_SECRET_CHANGE_BEFORE_PRODUCTION"
 ALGORITHM = "HS256"
 TOKEN_MINUTES = 8 * 60
 password_hash = PasswordHash.recommended()

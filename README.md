@@ -4,7 +4,7 @@
 
 An explainable workforce operating system that combines everyday HR workflows with decision-before-action intelligence.
 
-[![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=white)](https://react.dev/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/) [![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/) [![SQLite](https://img.shields.io/badge/SQLite-persistent-003B57?logo=sqlite&logoColor=white)](https://sqlite.org/) [![Tests](https://img.shields.io/badge/tests-9%20passing-2E7D32)](#verification)
+[![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=white)](https://react.dev/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![FastAPI](https://img.shields.io/badge/FastAPI-0.165-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/) [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/) [![SQLite](https://img.shields.io/badge/SQLite-persistent-003B57?logo=sqlite&logoColor=white)](https://sqlite.org/) [![quality](https://github.com/Krishna-V-Gowda/dayflow-hrms/actions/workflows/ci.yml/badge.svg)](https://github.com/Krishna-V-Gowda/dayflow-hrms/actions/workflows/ci.yml)
 
 ## Why Dayflow?
 
@@ -202,15 +202,22 @@ The current release has the following verified evidence:
 Run the backend tests with:
 
 ```bash
-PYTHONPATH=. .venv/bin/pytest -q
+.venv/bin/pytest
 ```
+
+The tests create and seed their own temporary SQLite database, so they never touch the local demo data and do not need the seed step first. CI runs them on every push together with the frontend build and dependency audits.
 
 ## Run locally
 
 Prerequisites:
 
-- Python compatible with the repository environment.
-- Node.js and npm.
+- Python 3.11 or newer.
+- Node.js 20 or newer and npm.
+
+Optional environment variables:
+
+- `DAYFLOW_SECRET_KEY` signs login tokens. Set it for any shared or deployed instance; the built-in value is for the local demo only.
+- `DAYFLOW_DATABASE_URL` points the API at another database (default: `backend/data/dayflow.db`).
 
 ### Backend
 
