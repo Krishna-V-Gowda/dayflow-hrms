@@ -1,18 +1,32 @@
+# One grouped pull request per ecosystem each month, minor and patch updates only.
+# Security fixes still arrive immediately through Dependabot security updates,
+# and CI fails on high-severity advisories, so major upgrades are done by hand.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: weekly
+      interval: monthly
     groups:
       github-actions:
-        patterns:
-          - "*"
+        patterns: ["*"]
   - package-ecosystem: pip
     directory: "/backend"
     schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      backend:
+        patterns: ["*"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: npm
     directory: "/frontend"
     schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      frontend:
+        patterns: ["*"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
