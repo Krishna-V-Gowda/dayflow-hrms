@@ -12,7 +12,7 @@ router = APIRouter(prefix="/api/payroll", tags=["payroll"])
 def serialize(record: PayrollRecord) -> dict:
     return {"id": record.id, "employee_id": record.employee_id, "employee_name": record.employee.full_name,
             "basic_salary": record.basic_salary, "allowances": record.allowances, "deductions": record.deductions,
-            "net_salary": record.basic_salary + record.allowances - record.deductions,
+            "net_salary": round(record.basic_salary + record.allowances - record.deductions, 2),
             "effective_from": record.effective_from, "updated_at": record.updated_at}
 
 
@@ -42,6 +42,8 @@ def update_payroll(employee_id: int, payload: PayrollUpdate, user: User = Depend
     employee = db.get(Employee, employee_id)
     if not employee:
         raise HTTPException(404, "Employee not found")
+    if payload.deductions > payload.basic_salary + payload.allowances:
+        raise HTTPException(422, "Deductions cannot be more than basic salary plus allowances.")
     record = ensure_record(db, employee)
     for field, value in payload.model_dump().items():
         setattr(record, field, value)
