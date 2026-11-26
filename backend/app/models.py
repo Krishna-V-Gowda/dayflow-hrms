@@ -1,11 +1,15 @@
 from __future__ import annotations
-from datetime import date, datetime
-from typing import Optional
+from datetime import UTC, date, datetime
 from typing import Optional
 from enum import Enum
 from sqlalchemy import Date, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .db import Base
+
+
+def utc_now() -> datetime:
+    """The current UTC time as a naive datetime: the form these columns already store."""
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 class Role(str, Enum):
@@ -68,7 +72,7 @@ class LeaveRequest(Base):
     remarks: Mapped[str] = mapped_column(Text, default="")
     status: Mapped[LeaveStatus] = mapped_column(String(20), default=LeaveStatus.PENDING)
     reviewer_comment: Mapped[str] = mapped_column(Text, default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
     reviewed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     employee: Mapped[Employee] = relationship(back_populates="leave_requests")
 
@@ -92,7 +96,7 @@ class PayrollRecord(Base):
     allowances: Mapped[float] = mapped_column(Float, default=0)
     deductions: Mapped[float] = mapped_column(Float, default=0)
     effective_from: Mapped[date] = mapped_column(Date, default=date.today)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, onupdate=utc_now)
     employee: Mapped[Employee] = relationship()
 
 
@@ -104,7 +108,7 @@ class AuditLog(Base):
     entity_type: Mapped[str] = mapped_column(String(60))
     entity_id: Mapped[int] = mapped_column(Integer)
     details: Mapped[str] = mapped_column(Text, default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
     actor: Mapped[User] = relationship()
 
 
@@ -116,5 +120,5 @@ class Notification(Base):
     title: Mapped[str] = mapped_column(String(160))
     message: Mapped[str] = mapped_column(Text)
     is_read: Mapped[bool] = mapped_column("read", default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
     user: Mapped[User] = relationship()

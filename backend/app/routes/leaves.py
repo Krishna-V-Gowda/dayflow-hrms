@@ -1,9 +1,8 @@
-from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..auth import get_current_user, require_hr
 from ..db import get_db
-from ..models import Employee, LeaveRequest, LeaveStatus, User
+from ..models import Employee, LeaveRequest, LeaveStatus, User, utc_now
 from ..schemas import LeaveCreate, LeaveDecision, LeaveOut
 from ..services import audit, notify
 
@@ -79,7 +78,7 @@ def decide_leave(
         raise HTTPException(409, "Only pending requests can be decided")
     item.status = payload.status
     item.reviewer_comment = payload.reviewer_comment
-    item.reviewed_at = datetime.utcnow()
+    item.reviewed_at = utc_now()
     audit(db, _, f"leave_{payload.status.value}", "leave", item.id, {"comment": payload.reviewer_comment})
     notify(db, item.employee.user_id, f"Leave {payload.status.value}", payload.reviewer_comment or f"Your leave request was {payload.status.value}.")
     db.commit()

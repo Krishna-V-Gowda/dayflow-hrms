@@ -1,9 +1,8 @@
-from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..auth import get_current_user, require_hr
 from ..db import get_db
-from ..models import Employee, PayrollRecord, User
+from ..models import Employee, PayrollRecord, User, utc_now
 from ..schemas import PayrollOut, PayrollUpdate
 from ..services import audit
 
@@ -47,7 +46,7 @@ def update_payroll(employee_id: int, payload: PayrollUpdate, user: User = Depend
     for field, value in payload.model_dump().items():
         setattr(record, field, value)
     employee.salary = record.basic_salary
-    record.updated_at = datetime.utcnow()
+    record.updated_at = utc_now()
     audit(db, user, "payroll_updated", "payroll", record.id, payload.model_dump())
     db.commit()
     db.refresh(record)
