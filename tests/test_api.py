@@ -109,3 +109,19 @@ def test_payroll_permissions():
     records = client.get("/api/payroll", headers=headers(hr))
     assert records.status_code == 200
     assert any(item["employee_id"] == own.json()["employee_id"] for item in records.json())
+
+
+def test_payroll_rejects_negative_net_pay_and_rounds_to_paise():
+    hr = headers(token("hr@dayflow.local", "Admin123!"))
+    record = next(item for item in client.get("/api/payroll", headers=hr).json() if item["employee_name"] != "Priya Menon")
+    original = {key: record[key] for key in ("basic_salary", "allowances", "deductions", "effective_from")}
+    url = f"/api/payroll/{record['employee_id']}"
+
+    rejected = client.put(url, headers=hr, json={**original, "basic_salary": 30000, "allowances": 0, "deductions": 40000})
+    assert rejected.status_code == 422
+    assert rejected.json()["detail"] == "Deductions cannot be more than basic salary plus allowances."
+
+    rounded = client.put(url, headers=hr, json={**original, "basic_salary": 0.2, "allowances": 0.1, "deductions": 0.3})
+    assert rounded.json()["net_salary"] == 0
+
+    assert client.put(url, headers=hr, json=original).status_code == 200
