@@ -1,8 +1,12 @@
+<p align="center"><img src="assets/card.png" alt="Dayflow: every workday, intelligently aligned" width="100%"></p>
+
 # Dayflow
 
 ### Every workday, intelligently aligned.
 
 An explainable workforce operating system that combines everyday HR workflows with decision-before-action intelligence.
+
+> Part of [Krishna V. Gowda's portfolio](https://krishna-v-gowda.github.io/).
 
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=white)](https://react.dev/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![FastAPI](https://img.shields.io/badge/FastAPI-0.165-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/) [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/) [![SQLite](https://img.shields.io/badge/SQLite-persistent-003B57?logo=sqlite&logoColor=white)](https://sqlite.org/) [![quality](https://github.com/Krishna-V-Gowda/dayflow-hrms/actions/workflows/ci.yml/badge.svg)](https://github.com/Krishna-V-Gowda/dayflow-hrms/actions/workflows/ci.yml)
 
